@@ -27,7 +27,39 @@ jobs:
           ls -al
 
       # 빌드를 위한 조건 -> nodejs 설치
-      # npm install 라이브러리 설치
+      # uses: actions/setup-node@v2
+      - name: nodejs 설치
+        uses: actions/setup-node@v2
+        with:
+          node-version: '22'
+
+      # npm install 라이브러리 설치 -> node_modules 생성
+      # run: npm install
+      - name: install 독립 라이브러리
+        run: npm install
+
+      # 단위 테스트 -> 생략
+      # name: 단위테스트
+      # run: npm test
+
       # 빌드
+      # run: npm run build
+      - name: 빌드
+        run: |
+          npm run build
+          ls ./build
+
       # 빌드의 결과물을 ec2 업로드
+      # 대상: ./build/*
+      # 타겟: /home/ubuntu/client
+      # 대상 위치에 존재하는 모든 리소스 -> ec2의 ~/client 하위에 복사해둬라
+      - name: EC2에 빌드된 파일/폴더들 업로드
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          source: ./build/*
+          target: /home/ubuntu/client
+
       # 뒷정리 (업로드 결과 -> nginx의 root로 이동(설정), 디렉토리 정리)
