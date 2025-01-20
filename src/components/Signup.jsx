@@ -24,7 +24,7 @@ function Signup() {
     e.preventDefault();
     try {
       console.log(user);
-      await axios.post('http://localhost:8080/join', user);
+      await axios.post('/join', user);
       alert('회원가입 성공');
       // 홈으로 이동(로그인)
       navigate('/'); 
